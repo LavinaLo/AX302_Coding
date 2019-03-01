@@ -72,9 +72,9 @@ function create(){
 
 	cursors = game.input.keyboard.createCursorKeys();
 	wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
-	wKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-	wKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
-	wKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+	aKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+	sKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+	dKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
 
 }
 
