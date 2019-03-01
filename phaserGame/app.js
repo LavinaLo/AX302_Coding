@@ -44,6 +44,60 @@ function create(){
 	liveslabel.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
 	livestext.setShadow(3, 3, 'rgba(0,0,0,0.5)', 2);
 
+	player = game.add.sprite(32, 410, 'dude');
+
+	game.physics.arcade.enable(player)
+	player.body.gravity.y = 300;
+	player.body.bounce.y = 0.2;
+	player.body.collideWorldBounds = true;
+	player.animations.add('left', [0,1,2,3], 10, true);
+	player.animations.add('right', [5,6,7,8], 10, true);
+
+	enemy = game.add.sprite(760, 20, 'baddie');
+
+	game.physics.arcade.enable(enemy)
+	enemy.body.gravity.y = 300;
+	enemy.body.bounce.y = 0.2;
+	enemy.body.collideWorldBounds = true;
+	enemy.animations.add('left', [0,1], 10, true);
+	enemy.animations.add('right', [2,3], 10, true);
+
+	stars = game.add.physicsGroup();
+	stars.enableBody = true;
+	for(var i = 0; i < 12; i++){
+		var star = stars.create(i*70, 0, "star");
+		star.body.gravity.y = 200;
+		star.body.bounce.y = Math.random()*0.2 + 0.7;
+	}
+
+	cursors = game.input.keyboard.createCursorKeys();
+	wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+	wKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+	wKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+	wKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+
 }
 
-function update(){}
+function update(){
+	game.physics.arcade.collide(player, platforms);
+	game.physics.arcade.collide(stars, platforms);
+	game.physics.arcade.collide(enemy, platforms);
+
+	player.body.velocity.x = 0;
+
+	if(cursors.left.isDown || aKey.isDown){
+		player.body.velocity.x = -150;
+		player.animations.play('left');
+	} else if(cursors.right.isDown || dKey.isDown){
+		player.body.velocity.x = 150;
+		player.animations.play('right');
+	} else {
+		player.animations.stop();
+		player.frame = 4;
+	}
+
+	if((cursors.up.isDown || wKey.isDown) && player.body.touching.down ){
+		player.body.velocity.y = -300;
+	}
+
+}
