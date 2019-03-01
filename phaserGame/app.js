@@ -29,7 +29,7 @@ function create(){
 	var ledge = platforms.create(400, 400, 'platform');
 	ledge.body.immovable = true;
 
-	var ledge = platforms.create(-100, 250, platform);
+	var ledge = platforms.create(-100, 250, 'platform');
 	ledge.body.immovable = true;
 
 	var style = {font: "bold 32px Arial", fill:"#fff"};
