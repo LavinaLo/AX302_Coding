@@ -9,6 +9,8 @@ function preload(){
 	game.load.image('firstaid', 'assets/firstaid.png');
 	game.load.image('platform', 'assets/platform.png');
 	game.load.image('star', 'assets/star.png'); 
+	game.load.image('diamond', 'assests/diamond.png');
+	game.load.image('firstaid', 'assests/firstaid.png');
 
 	game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
 	game.load.spritesheet('baddie', 'assets/baddie.png', 32, 32);
@@ -54,6 +56,7 @@ function create(){
 	player.animations.add('right', [5,6,7,8], 10, true);
 
 	enemy = game.add.sprite(760, 20, 'baddie');
+	diamond = game.add.sprite(200, 200, 'diamond');
 
 	game.physics.arcade.enable(enemy)
 	enemy.body.gravity.y = 300;
@@ -69,6 +72,12 @@ function create(){
 		star.body.gravity.y = 200;
 		star.body.bounce.y = Math.random()*0.2 + 0.7;
 	}
+	game.physics.arcade.enable(diamond)
+	diamond.body.gravity.y = 300;
+	diamond.body.bounce.y = 0.2;
+
+	firstaids = game.add.physicsGroup();
+	firstaids.enableBody = true;
 
 	cursors = game.input.keyboard.createCursorKeys();
 	wKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
@@ -82,6 +91,8 @@ function update(){
 	game.physics.arcade.collide(player, platforms);
 	game.physics.arcade.collide(stars, platforms);
 	game.physics.arcade.collide(enemy, platforms);
+	game.physics.arcade.collide(diamond, platforms);
+	game.physics.arcade.collide(firstaids, platforms);
 
 	player.body.velocity.x = 0;
 
@@ -100,4 +111,72 @@ function update(){
 		player.body.velocity.y = -300;
 	}
 
+	moveEnemy();
+
+	game.physics.arcade.overlap(player, stars, collectStar);
+	game.physics.arcade.overlap(player, enemy, loseLife);
+	game.physics.arcade.overlap(player, diamond, addScore);
+	game.physics.arcade.overlap(player, firstaids, addLife);
+
 }
+
+function collectStar(player, star){
+	score = score + 1;
+	scoretext.setText(score);
+
+	star.kill();
+	star.reset(Math.floor(Math.random() * 760), 0)
+
+}
+
+function addScore(player, diamond){
+	score = score + 2;
+	scoretext.setText(score);
+
+	diamond.kill();
+	diamond.reset(Math.floor(Math.random() * 760), 0)
+}
+
+function loseLife(player, enemy){
+	lives = lives - 1;
+	livestext.setText(lives);
+
+	enemy.kill();
+	enemy.reset(760, 10); 
+
+	if(lives < 1) {
+		endGame();
+	}
+
+	if (lives == 1) {
+		var firstaid = firstaids.create(Math.random() * 760, 0, 'firstaid')
+		firstaid.body.gravity.y = 200;
+		firstaid.body.bounce.y = Math.random()*0.3 + 0.7; 
+	}
+}
+
+function addLife(player, firstaid){
+	lives = lives + 1;
+	livestext.setText(lives);
+
+	firstaid.kill();
+}
+
+function moveEnemy(){
+	if(enemy.x > 759){
+		enemy.body.velocity.x = -120;
+		enemy.animations.play('left');
+	} else if(enemy.x < 410){
+		enemy.body.velocity.x = 120;
+		enemy.animations.play('right');
+	}
+}
+
+function endGame(){
+	player.kill();
+	liveslabel.visible = false;
+	livestext.visible = false;
+	scoretext.visible = false;
+	scorelabel.text = "GAME OVER! You scored " + score;
+}
+
