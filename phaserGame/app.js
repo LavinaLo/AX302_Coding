@@ -56,6 +56,7 @@ function create(){
 	player.animations.add('right', [5,6,7,8], 10, true);
 
 	enemy = game.add.sprite(760, 20, 'baddie');
+	enemy2 = game.add.sprite(9, 40, 'baddie');
 	diamond = game.add.sprite(200, 200, 'diamond');
 
 	game.physics.arcade.enable(enemy)
@@ -64,6 +65,13 @@ function create(){
 	enemy.body.collideWorldBounds = true;
 	enemy.animations.add('left', [0,1], 10, true);
 	enemy.animations.add('right', [2,3], 10, true);
+
+	game.physics.arcade.enable(enemy2)
+	enemy2.body.gravity.y = 300;
+	enemy2.body.bounce.y = 0.2;
+	enemy2.body.collideWorldBounds = true;
+	enemy2.animations.add('left', [0,1], 10, true);
+	enemy2.animations.add('right', [2,3], 10, true);
 
 	stars = game.add.physicsGroup();
 	stars.enableBody = true;
@@ -91,6 +99,7 @@ function update(){
 	game.physics.arcade.collide(player, platforms);
 	game.physics.arcade.collide(stars, platforms);
 	game.physics.arcade.collide(enemy, platforms);
+	game.physics.arcade.collide(enemy2, platforms);
 	game.physics.arcade.collide(diamond, platforms);
 	game.physics.arcade.collide(firstaids, platforms);
 
@@ -112,9 +121,11 @@ function update(){
 	}
 
 	moveEnemy();
+	moveEnemy2();
 
 	game.physics.arcade.overlap(player, stars, collectStar);
 	game.physics.arcade.overlap(player, enemy, loseLife);
+	game.physics.arcade.overlap(player,enemy2, loseLife);
 	game.physics.arcade.overlap(player, diamond, addScore);
 	game.physics.arcade.overlap(player, firstaids, addLife);
 
@@ -153,6 +164,25 @@ function loseLife(player, enemy){
 		firstaid.body.gravity.y = 200;
 		firstaid.body.bounce.y = Math.random()*0.3 + 0.7; 
 	}
+
+}
+
+function loseLife(player, enemy2){
+	lives = lives - 1;
+	livestext.setText(lives);
+
+	enemy2.kill();
+	enemy2.reset(9, 40); 
+
+	if(lives < 1) {
+		endGame();
+	}
+
+	if (lives == 1) {
+		var firstaid = firstaids.create(Math.random() * 760, 0, 'firstaid')
+		firstaid.body.gravity.y = 200;
+		firstaid.body.bounce.y = Math.random()*0.3 + 0.7; 
+	}
 }
 
 function addLife(player, firstaid){
@@ -163,7 +193,7 @@ function addLife(player, firstaid){
 }
 
 function moveEnemy(){
-	if(enemy.x > 759){
+	if(enemy.x > 759){ 
 		enemy.body.velocity.x = -120;
 		enemy.animations.play('left');
 	} else if(enemy.x < 410){
@@ -172,11 +202,21 @@ function moveEnemy(){
 	}
 }
 
+function moveEnemy2(){
+	if(enemy2.x > 250){ 
+		enemy2.body.velocity.x = -120;
+		enemy2.animations.play('left');
+	} else if(enemy2.x < 10){
+		enemy2.body.velocity.x = 120;
+		enemy2.animations.play('right');
+	}
+}
+
 function endGame(){
 	player.kill();
 	liveslabel.visible = false;
 	livestext.visible = false;
 	scoretext.visible = false;
-	scorelabel.text = "GAME OVER! You scored " + score;
+	scorelabel.visible = "GAME OVER! You score " + score;
 }
 
